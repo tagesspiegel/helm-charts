@@ -1,0 +1,18 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "namespace-permission-manager.fullname" . }}-metrics
+  labels:
+    app.kubernetes.io/component: metrics
+    {{- include "namespace-permission-manager.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.monitoring.service.type }}
+  ports:
+    - port: {{ .Values.monitoring.service.port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    {{- include "namespace-permission-manager.selectorLabels" . | nindent 4 }}
+{{- end }}

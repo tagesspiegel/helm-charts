@@ -1,0 +1,32 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+## Installation
+
+Add Helm repository:
+
+```bash
+helm repo add tagesspiegel https://tagesspiegel.github.io/helm-charts
+```
+
+Upgrade or install the operator:
+
+```bash
+helm upgrade --install \
+  my-secret tagesspiegel/namespace-permission-manager
+```
+
+## Maintainers
+
+{{ template "chart.maintainersTable" . }}
+
+## Requirements
+
+{{ template "chart.requirementsTable" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

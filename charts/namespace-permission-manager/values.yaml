@@ -1,0 +1,141 @@
+# Default values for namespace-permission-manager.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: tagesspiegel/kubernetes-namespace-permission-manager
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+rbac:
+  # -- rbac.enabled specifies whether RBAC resources should be created
+  # If disabled, the operator will use the permissions of the service account the operator is running under
+  enabled: true
+  # -- roleRules defines the permissions the operator has access to
+  # The operator needs at least access to:
+  #   namespaces: [list, get, watch]
+  #   roles: [list, get, watch, create, update, delete]
+  #   rolebindings: [list, get, watch, create, update, delete]
+  #
+  # And to any resource defined in the ns.tagesspiegel.de/rolebinding-subjects, ns.tagesspiegel.de/rolebinding-roleref and ns.tagesspiegel.de/custom-role-rules annotations
+  # To simplify the configuration, the operator has access to all resources in all namespaces by default.
+  roleRules:
+    - apiGroups:
+        - "*"
+      resources:
+        - "*"
+      verbs:
+        - "*"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  # fsGroup: 2000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# -- pdb defines the pod disruption budget for the operator
+pdb:
+  enabled: false
+  annotations: {}
+  minAvailable: 1
+  maxUnavailable: 0
+
+# -- networkPolicy defines the network access to and from the operator
+networkPolicy:
+  enabled: false
+  ingress: []
+    # - from:
+    #   - ipBlock:
+    #       cidr: 10.0.0.0/24
+    #       except:
+    #         - 10.0.0.128/25
+    #   - namespaceSelector:
+    #       matchLabels:
+    #         kubernetes.io/metadata.name: frontend
+    #   - podSelector:
+    #       matchLabels:
+    #         app.kubernetes.io/name: frontend
+    #   ports:
+    #     - protocol: TCP
+    #       port: 80
+  egress: []
+    # - to:
+    #     - ipBlock:
+    #         cidr: 10.0.0.0/24
+    #   ports:
+    #     - protocol: UDP
+    #       port: 53
+
+# -- Monitoring configuration
+monitoring:
+  # -- Enable Prometheus Operator Monitoring
+  enabled: false
+  # -- RBAC Proxy configuration
+  rbacProxy:
+    # -- Image to use for the RBAC Proxy
+    image:
+      # -- Image repository
+      repository: gcr.io/kubebuilder/kube-rbac-proxy
+      # -- Image pull policy
+      pullPolicy: IfNotPresent
+      # -- Tag overrides the image tag whose default is the chart appVersion.
+      tag: "v0.15.0"
+    # -- RBAC Proxy resource configuration
+    resources: {}
+      # limits:
+      #   cpu: 500m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 5m
+      #   memory: 64Mi
+  service:
+    # -- Service configuration
+    type: ClusterIP
+    # -- Service port
+    port: 8443
+  # -- ServiceMonitor configuration
+  serviceMonitor:
+    # -- Enable ServiceMonitor
+    enabled: false
+    # -- Service Monitor namespace
+    namespace: ""

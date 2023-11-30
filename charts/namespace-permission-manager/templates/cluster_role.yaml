@@ -1,0 +1,10 @@
+{{- if .Values.rbac.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "namespace-permission-manager.fullname" . }}
+  labels:
+    {{- include "namespace-permission-manager.labels" . | nindent 4 }}
+rules:
+  {{- toYaml .Values.rbac.roleRules | nindent 2 }}
+{{- end }}
